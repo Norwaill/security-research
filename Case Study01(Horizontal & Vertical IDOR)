@@ -22,3 +22,8 @@ Host: [REDACTED].life
 Content-Type: x-www-form-urlencoded
 
 email=TARGET_EMAIL&password=NEW_PASSWORD&pass2=NEW_PASSWORD
+
+0x05: Key Takeaway
+
+Client-side authorization is not secured.
+Always implement server-side checks to ensure that the requesting user has the authority to perform actions on the targeted object ID.
