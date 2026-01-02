@@ -1,0 +1,24 @@
+## Case Study: Horizontal & Vertical IDOR in Event Management Platform
+
+### 0x01: Summary
+An Insecure Direct Object Reference (IDOR) was discovered in the user profile management endpoint of a production web application. The vulnerability allowed an authenticated user to view, modify, and delete any other user account by manipulating the `id` parameter.
+
+### 0x02: Vulnerability Details
+* **Type:** Broken Access Control (IDOR)
+* **Severity:** Critical
+* **Affected Endpoint:** `/admin/account.php?id=[USER_ID]`
+* **Mechanism:** The server failed to validate if the session cookie (`PHPSESSID`) matched the `id` provided in the GET/POST requests.
+
+### 0x03: Attack Vectors Tested
+1. **Information Disclosure:** Accessing `account.php?id=[Victim_ID]` revealed full name, email, and phone number.
+2. **Account Takeover (ATO):** Submitting the password change form with the Victim's ID and Email successfully updated their credentials.
+3. **Unauthorized Deletion:** Appending `delete_user=1` to the URL for a Victim's ID resulted in permanent account removal.
+4. **Vertical Privilege Escalation:** Discovered that administrative paths (e.g., `/admin/users.php`) were accessible to low-privileged accounts.
+
+### 0x04: Proof of Concept (Payload)
+```http
+POST /admin/account.php?id=TARGET_ID&save=5 HTTP/1.1
+Host: [REDACTED].life
+Content-Type: x-www-form-urlencoded
+
+email=TARGET_EMAIL&password=NEW_PASSWORD&pass2=NEW_PASSWORD
